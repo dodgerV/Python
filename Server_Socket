@@ -38,7 +38,8 @@ def clientthread(conn):
     conn.close()
 
 def login():
-    log_params = {'username': 'dbase', 'password': 'nWGgct8x'}
+#LOGIN AND PASSWORD!!!!!!!!!!!!!!!!!!!!!!!
+    log_params = {'username': '#########', 'password': '#########'}
     r=requests.get('https://192.168.10.80:8080/login?',verify=False,params=log_params)
     sid=json.loads(r.text)["sid"]
     return sid
