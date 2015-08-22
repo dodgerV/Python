@@ -1,0 +1,70 @@
+import requests
+import json
+import socket
+import sys
+from thread import *
+
+def open_socket():
+        HOST = ''   
+        PORT = 10001
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
+        try:
+                s.bind((HOST, PORT))
+        except socket.error , msg:
+                print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+                sys.exit()
+                
+        s.listen(10)
+        while 1:
+                #wait to accept a connection - blocking call
+                conn, addr = s.accept()
+                print 'Connected with ' + addr[0] + ':' + str(addr[1])
+                #start new thread takes 1st argument as a function name to be run, second is the tuple of arguments to the function.
+                start_new_thread(clientthread ,(conn,))
+        s.close()
+        
+def clientthread(conn):
+    conn.send('Welcome to the server. Type code ') #send only takes string
+     
+    while True:
+         
+        #Receiving from client
+        code = conn.recv(1024)
+        if not code: 
+            break
+        conn.sendall(results(int(code)))
+
+    conn.close()
+
+def login():
+    log_params = {'username': 'dbase', 'password': 'nWGgct8x'}
+    r=requests.get('https://192.168.10.80:8080/login?',verify=False,params=log_params)
+    sid=json.loads(r.text)["sid"]
+    return sid
+
+def results(code):
+    session={'sid': login()}
+    if(code==1):
+        return status(session)
+   
+     
+        
+def status(session):
+    r = requests.get('https://192.168.10.80:8080/health?',verify=False,params=session)
+    temp=r.text.split('\n/*')
+    data=temp[0]
+    del(temp)
+    return data
+
+open_socket()
+
+
+
+ 
+
+
+ 
+
+
+
